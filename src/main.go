@@ -55,3 +55,11 @@ func (smolDb *SmolDb) add(key string, pair interface{}) error {
 
 	return nil
 }
+
+func (smoldb *SmolDb) get(key string) interface{} {
+	if idx := smoldb.keyExists(key); idx != -1 {
+		return smoldb.KeyPairs[idx]
+	}
+
+	return nil
+}
