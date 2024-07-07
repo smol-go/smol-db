@@ -82,3 +82,13 @@ func (smoldb *SmolDb) delete(key string) error {
 
 	return fmt.Errorf("key value pair with this key does not exists")
 }
+
+func (smoldb *SmolDb) representate() map[string]interface{} {
+	var repr map[string]interface{} = map[string]interface{}{}
+
+	for _, kp := range smoldb.KeyPairs {
+		repr[kp.Key] = kp.Pair
+	}
+
+	return repr
+}
