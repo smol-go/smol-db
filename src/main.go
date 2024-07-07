@@ -92,3 +92,15 @@ func (smoldb *SmolDb) representate() map[string]interface{} {
 
 	return repr
 }
+
+func (smoldb *SmolDb) groupByDatatype(datatype interface{}) map[string]interface{} {
+	data := map[string]interface{}{}
+
+	for _, kp := range smoldb.KeyPairs {
+		if fmt.Sprintf("%T", kp.Pair) == fmt.Sprintf("%T", datatype) {
+			data[kp.Key] = kp.Pair
+		}
+	}
+
+	return data
+}
