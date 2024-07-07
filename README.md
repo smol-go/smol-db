@@ -1,0 +1,1 @@
+A simple in memory database written in golang
