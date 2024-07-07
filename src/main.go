@@ -18,3 +18,7 @@ func createDB(filename string) SmolDb {
 		KeyPairs: []KeyPair{},
 	}
 }
+
+func (smoldb *SmolDb) clear() {
+	smoldb.KeyPairs = []KeyPair{}
+}
