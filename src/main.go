@@ -22,3 +22,7 @@ func createDB(filename string) SmolDb {
 func (smoldb *SmolDb) clear() {
 	smoldb.KeyPairs = []KeyPair{}
 }
+
+func (smoldb *SmolDb) compress() {
+	smoldb.Compress = true
+}
