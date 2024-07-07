@@ -56,10 +56,19 @@ func (smolDb *SmolDb) add(key string, pair interface{}) error {
 	return nil
 }
 
-func (smoldb *SmolDb) get(key string) interface{} {
+func (smoldb *SmolDb) get(key string) (interface{}, error) {
 	if idx := smoldb.keyExists(key); idx != -1 {
-		return smoldb.KeyPairs[idx]
+		return smoldb.KeyPairs[idx], nil
 	}
 
-	return nil
+	return nil, fmt.Errorf("key with name %s not found", key)
+}
+
+func (smoldb *SmolDb) set(key string, value interface{}) error {
+	if idx := smoldb.keyExists(key); idx != -1 {
+		smoldb.KeyPairs[idx].Pair = value
+		return nil
+	}
+
+	return fmt.Errorf("a key value pair with this key already exists")
 }
