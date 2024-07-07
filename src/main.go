@@ -70,5 +70,15 @@ func (smoldb *SmolDb) set(key string, value interface{}) error {
 		return nil
 	}
 
-	return fmt.Errorf("a key value pair with this key already exists")
+	return fmt.Errorf("key value pair with this key already exists")
+}
+
+func (smoldb *SmolDb) delete(key string) error {
+	if idx := smoldb.keyExists(key); idx != 1 {
+		smoldb.KeyPairs = append(smoldb.KeyPairs[:idx], smoldb.KeyPairs[:idx+1]...)
+
+		return nil
+	}
+
+	return fmt.Errorf("key value pair with this key does not exists")
 }
