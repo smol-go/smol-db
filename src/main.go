@@ -1,6 +1,12 @@
 package main
 
-import "fmt"
+import (
+	"compress/zlib"
+	"encoding/gob"
+	"fmt"
+	"io"
+	"os"
+)
 
 type KeyPair struct {
 	Key  string
@@ -103,4 +109,53 @@ func (smoldb *SmolDb) groupByDatatype(datatype interface{}) map[string]interface
 	}
 
 	return data
+}
+
+func (smoldb *SmolDb) save() error {
+	buf, err := os.OpenFile(smoldb.Filename, os.O_WRONLY|os.O_CREATE, 0666)
+	if err != nil {
+		return err
+	}
+
+	if smoldb.Compress {
+		// If compression is enabled, create a new zlib writer with the specified compression level
+		var out io.Writer
+
+		out, err := zlib.NewWriterLevel(buf, smoldb.ZlibCompressLevel)
+
+		if err != nil {
+			return err
+		}
+
+		// Creates a new gob encoder that writes to the zlib writer
+		enc := gob.NewEncoder(out)
+		err = enc.Encode(smoldb)
+
+		if err != nil {
+			return err
+		}
+
+		// Checks if the zlib writer (out) implements the io.Closer interface
+		if c, ok := out.(io.Closer); ok {
+			err = c.Close()
+
+			if err != nil {
+				return err
+			}
+
+			err = buf.Close()
+
+			if err != nil {
+				return err
+			}
+		}
+
+		return nil
+	}
+
+	// If compression is not enabled, create a gob encoder that writes to the file
+	enc := gob.NewEncoder(buf)
+	enc.Encode(smoldb)
+
+	return nil
 }
