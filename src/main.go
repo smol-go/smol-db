@@ -159,3 +159,46 @@ func (smoldb *SmolDb) save() error {
 
 	return nil
 }
+
+func open(filename string, compressed bool) (SmolDb, error) {
+	var db SmolDb
+	file, err := os.OpenFile(filename, os.O_RDWR, 0666)
+
+	if compressed {
+		rc, err := zlib.NewReader(file)
+
+		if err != nil {
+			return db, err
+		}
+
+		enc := gob.NewDecoder(rc)
+		err = enc.Decode(&db)
+
+		if err != nil {
+			rc.Close()
+
+			return SmolDb{}, err
+		}
+
+		err = rc.Close()
+
+		if err != nil {
+			return db, err
+		}
+
+		err = file.Close()
+
+		return db, err
+	}
+
+	enc := gob.NewDecoder(file)
+	err = enc.Decode(&db)
+
+	if err != nil {
+		return db, err
+	}
+
+	err = file.Close()
+
+	return db, err
+}
